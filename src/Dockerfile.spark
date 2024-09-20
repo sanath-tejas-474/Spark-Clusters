@@ -1,0 +1,22 @@
+# Base image with Apache Spark
+FROM bitnami/spark:latest
+
+# Switch to root to install system dependencies
+USER root
+
+# Install system dependencies, then clean up to reduce image size
+RUN apt-get update && \
+    apt-get install -y python3-pip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy requirements.txt into the Docker image
+COPY requirements.txt .
+
+# Install Python packages from requirements.txt
+RUN pip3 install --no-cache-dir -r requirements.txt
+
+# Clean up unnecessary cache files
+RUN apt-get clean
+
+# Set user back to non-root if needed (depends on Spark's default user setup)
+USER 1001
